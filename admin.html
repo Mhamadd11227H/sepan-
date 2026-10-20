@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="ku" dir="rtl"><head><meta charset="UTF-8"><meta name="robots" content="noindex,nofollow"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>پانێلا ئەدمین | SEPAN STYLE</title>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(60% 30% at 50% 0,#F6DCD0,transparent),#FBF5EE;color:#3B2A2C;font:15px/1.7 Vazirmatn,sans-serif;padding:16px}
+.w{max-width:520px;margin:0 auto}
+.c{background:#fff;border:1px solid #EBDCD2;border-radius:24px;padding:18px;margin-bottom:14px;box-shadow:0 18px 40px -26px rgba(183,110,121,.6)}
+h2{margin:0 0 10px;font-size:18px}label{display:block;font-weight:700;margin:10px 0 4px}
+input,select{width:100%;padding:12px;border:1.5px solid #EBDCD2;border-radius:14px;font:inherit;background:#fff}input:focus,select:focus{outline:0;border-color:#B76E79}
+button{font:inherit;border:0;border-radius:99px;padding:12px 22px;background:linear-gradient(135deg,#B76E79,#D9A58F);color:#fff;font-weight:700;width:100%;margin-top:14px;cursor:pointer}button:active{transform:scale(.97)}button:disabled{opacity:.6}
+button.s{width:auto;padding:6px 12px;margin:0;font-size:13px;background:#8B7377}button.d{background:#c0392b}
+.r{display:flex;gap:8px;align-items:center;padding:8px 0;border-top:1px solid #EBDCD2}.r img{width:52px;height:64px;object-fit:cover;border-radius:10px;background:#F3DDD3}.r div{flex:1}
+.z{display:flex;gap:8px;flex-wrap:wrap}.z label{display:flex;gap:4px;align-items:center;font-weight:500;margin:0}.z input{width:auto}
+#msg,#lm{text-align:center;color:#B76E79;font-weight:700}
+</style></head><body><div class="w">
+<h2 style="text-align:center">🌸 SEPAN STYLE · پانێلا ئەدمین</h2>
+<div class="c" id="login"><label>توکنا GitHub</label><input id="tk" type="password" dir="ltr" placeholder="github_pat_..."><label class="z"><span><input type="checkbox" id="rm"> توکنێ ل سەر ڤی ئامیری بپارێزە</span></label><button onclick="signIn()">چوونە ژۆر</button><p id="lm"></p></div>
+<div id="app" hidden>
+<div class="c"><h2>بەرهەمەکێ نوی</h2>
+<label>ناڤ</label><input id="n"><label>نرخ (دینار، ئەگەر نزانی ڤالا بهێڵە)</label><input id="p" inputmode="numeric">
+<label>جۆر</label><select id="cat"><option>دریش</option><option>بلوز</option><option>پانتۆل</option><option>عەبا</option><option>سێت</option><option>تر</option></select>
+<label>سایز</label><div class="z" id="sz"></div>
+<label>وێنە (دکارێ چەندان هەلبژێری)</label><input id="f" type="file" accept="image/*" multiple>
+<label class="z" style="margin-top:12px"><span><input type="checkbox" id="nw"> نوی</span></label>
+<button onclick="add()" id="ab">زێدەکرن</button><p id="msg"></p></div>
+<div class="c"><h2>بەرهەمێن هەین</h2><div id="list"></div></div>
+<button class="s" style="margin:0 auto;display:block" onclick="signOut()">دەرکەفتن</button></div></div>
+<script src="config.js"></script>
+<script>
+const $=id=>document.getElementById(id),say=t=>$('msg').textContent=t,esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const G={o:CFG.GH_OWNER,r:CFG.GH_REPO,b:CFG.GH_BRANCH||'main'};let TK='',L=[];
+try{TK=localStorage.getItem('tk')||''}catch(e){}
+if(!G.o||!G.r)document.body.insertAdjacentHTML('afterbegin','<p style="color:#c0392b;text-align:center">⚠️ ناڤێ GitHub و repository ل config.js پڕ بکە</p>');
+const num=s=>+String(s).replace(/[٠-٩]/g,d=>'٠١٢٣٤٥٦٧٨٩'.indexOf(d)).replace(/[^\d]/g,'')||null;
+const api=(p,o={})=>fetch(`https://api.github.com/repos/${G.o}/${G.r}/contents/${p}`,{...o,headers:{Authorization:'Bearer '+TK,Accept:'application/vnd.github+json'}});
+const enc=s=>{let b='';new TextEncoder().encode(s).forEach(c=>b+=String.fromCharCode(c));return btoa(b)};
+const dec=b=>new TextDecoder().decode(Uint8Array.from(atob(b.replace(/\s/g,'')),c=>c.charCodeAt(0)));
+$('sz').innerHTML=['S','M','L','XL','XXL','Free'].map(s=>`<label><input type="checkbox" value="${s}">${s}</label>`).join('');
+async function get(){const r=await api('products.json?ref='+G.b);
+ if(r.status===404)return{data:[]};
+ if(!r.ok)throw new Error(r.status===401?'توکن خەلەتە یان بوویە کۆن':r.status===403?'توکن مافێ نڤیسینێ نینە':'GitHub '+r.status);
+ const j=await r.json();return{data:JSON.parse(dec(j.content)),sha:j.sha}}
+async function mutate(fn,msg){const {data,sha}=await get(),nd=fn(data);
+ const r=await api('products.json',{method:'PUT',body:JSON.stringify({message:msg,content:enc(JSON.stringify(nd,null,1)),sha,branch:G.b})});
+ if(!r.ok)throw new Error((await r.json()).message||r.status);return nd}
+function shrink(file){return new Promise(r=>{const i=new Image();i.onload=()=>{const k=Math.min(1,900/i.width),c=document.createElement('canvas');c.width=Math.round(i.width*k);c.height=Math.round(i.height*k);c.getContext('2d').drawImage(i,0,0,c.width,c.height);c.toBlob(r,'image/jpeg',.82)};i.src=URL.createObjectURL(file)})}
+async function upImg(f){const b=await shrink(f),data=await new Promise(r=>{const x=new FileReader();x.onload=()=>r(x.result.split(',')[1]);x.readAsDataURL(b)}),path='images/'+Date.now()+Math.random().toString(36).slice(2,6)+'.jpg';
+ const r=await api(path,{method:'PUT',body:JSON.stringify({message:'add image',content:data,branch:G.b})});
+ if(!r.ok)throw new Error((await r.json()).message||r.status);return path}
+async function show(){if(!TK){$('login').hidden=false;$('app').hidden=true;return}
+ try{L=(await get()).data;$('login').hidden=true;$('app').hidden=false;draw()}catch(e){$('lm').textContent=e.message;$('login').hidden=false;$('app').hidden=true}}
+function signIn(){TK=$('tk').value.trim();try{if($('rm').checked)localStorage.setItem('tk',TK)}catch(e){}show()}
+function signOut(){TK='';try{localStorage.removeItem('tk')}catch(e){}$('tk').value='';show()}
+async function add(){const n=$('n').value.trim();if(!n)return alert('ناڤی بنڤیسە');
+ $('ab').disabled=true;
+ try{say('وێنە دهێنە بارکرن...');const im=[];for(const f of $('f').files)im.push(await upImg(f));
+  say('بەرهەم دهێتە پاراستن...');
+  const sizes=[...document.querySelectorAll('#sz input:checked')].map(x=>x.value),pr=num($('p').value),cat=$('cat').value,nw=$('nw').checked;
+  L=await mutate(d=>[{id:Date.now(),name:n,price:pr,category:cat,sizes,images:im,is_new:nw,soldout:false},...d],'add product');
+  $('n').value=$('p').value=$('f').value='';document.querySelectorAll('#sz input,#nw').forEach(x=>x.checked=false);
+  say('✅ زێدە بوو! دەمەکێ کێم ب بەرخۆڤە بگرە هەتا وێبسایت نوی دبیت');draw()}
+ catch(e){say('خەلەتی: '+e.message)}$('ab').disabled=false}
+async function act(id,t){try{let pr;
+ if(t==='d'&&!confirm('تو پشتڕاستی دڤێت ڤی بەرهەمی ژێ ببەی؟'))return;
+ if(t==='p'){const v=prompt('نرخێ نوی (دینار):');if(v===null)return;pr=num(v)}
+ say('دهێتە پاراستن...');
+ L=await mutate(d=>t==='d'?d.filter(p=>p.id!=id):d.map(p=>p.id!=id?p:t==='s'?{...p,soldout:!p.soldout}:{...p,price:pr}),'update product');
+ say('✅ هاتە پاراستن');draw()}catch(e){say('خەلەتی: '+e.message)}}
+function draw(){$('list').innerHTML=L.map(p=>`<div class="r">${p.images?.[0]?`<img src="${esc(p.images[0])}" alt="">`:'<span>👗</span>'}<div><b>${esc(p.name)}</b><br><small>${p.price?p.price.toLocaleString('en'):'—'} · ${esc((p.sizes||[]).join(' '))}${p.soldout?' · تەمام بوو':''}</small></div><button class="s" onclick="act(${+p.id},'p')">نرخ</button><button class="s" onclick="act(${+p.id},'s')">${p.soldout?'ئامادەیە':'تەمام بوو'}</button><button class="s d" onclick="act(${+p.id},'d')">🗑</button></div>`).join('')||'<small>هێشتا بەرهەم نینن</small>'}
+show();
+</script></body></html>
