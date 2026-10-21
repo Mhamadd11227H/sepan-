@@ -84,7 +84,7 @@ const api=(p,o={})=>fetch(`https://api.github.com/repos/${G.o}/${G.r}/contents/$
 const bd=o=>JSON.stringify(G.b?{...o,branch:G.b}:o);
 const enc=s=>{let b='';new TextEncoder().encode(s).forEach(c=>b+=String.fromCharCode(c));return btoa(b)};
 const dec=b=>new TextDecoder().decode(Uint8Array.from(atob(b.replace(/\s/g,'')),c=>c.charCodeAt(0)));
-$('sz').innerHTML=['S','M','L','XL','XXL','Free'].map(s=>`<label class="chip"><input type="checkbox" value="${s}"><span>${s}</span></label>`).join('');
+$('sz').innerHTML=['S','M','L','XL','XXL','Free size'].map(s=>`<label class="chip"><input type="checkbox" value="${s}"><span>${s}</span></label>`).join('');
 $('f').onchange=()=>{$('pv').innerHTML=[...$('f').files].map(f=>`<img src="${URL.createObjectURL(f)}" alt="">`).join('')};
 async function get(){const r=await api('products.json'+(G.b?'?ref='+encodeURIComponent(G.b):''));
  if(r.ok){const j=await r.json();return{data:JSON.parse(dec(j.content)),sha:j.sha}}
@@ -114,7 +114,7 @@ async function add(){const n=$('n').value.trim();if(!n)return alert('ناڤی ب
   const sizes=[...document.querySelectorAll('#sz input:checked')].map(x=>x.value),pr=num($('p').value),cat=$('cat').value,nw=$('nw').checked;
   L=await mutate(d=>[{id:Date.now(),name:n,price:pr,category:cat,sizes,images:im,is_new:nw,soldout:false},...d],'add product');
   $('n').value=$('p').value=$('f').value='';$('pv').innerHTML='';document.querySelectorAll('#sz input,#nw').forEach(x=>x.checked=false);
-  say('✅ زێدە بوو! دەمەکێ کێم ب بەرخۆڤە بگرە هەتا وێبسایت نوی دبیت');draw()}
+  say('✅ زێدە بوو! دەمەکێ کێم خوو بگرە هەتا وێبسایت نوی دبیت');draw()}
  catch(e){say('خەلەتی: '+e.message)}$('ab').disabled=false}
 async function act(id,t){try{let pr;
  if(t==='d'&&!confirm('تو پشتڕاستی دڤێت ڤی بەرهەمی ژێ ببەی؟'))return;
