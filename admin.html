@@ -76,29 +76,36 @@ input:focus,select:focus{outline:0;border-color:var(--r3);box-shadow:0 0 0 4px r
 <script src="config.js"></script>
 <script>
 const $=id=>document.getElementById(id),say=t=>$('msg').textContent=t,esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const G={o:CFG.GH_OWNER,r:CFG.GH_REPO,b:CFG.GH_BRANCH||'main'};let TK='',L=[];
+const G={o:CFG.GH_OWNER,r:CFG.GH_REPO,b:CFG.GH_BRANCH||''};let TK='',L=[];
 try{TK=localStorage.getItem('tk')||''}catch(e){}
 if(!G.o||!G.r)$('lm').textContent='⚠️ ناڤێ GitHub و repository ل config.js پڕ بکە';
 const num=s=>+String(s).replace(/[٠-٩]/g,d=>'٠١٢٣٤٥٦٧٨٩'.indexOf(d)).replace(/[^\d]/g,'')||null;
 const api=(p,o={})=>fetch(`https://api.github.com/repos/${G.o}/${G.r}/contents/${p}`,{...o,headers:{Authorization:'Bearer '+TK,Accept:'application/vnd.github+json'}});
+const bd=o=>JSON.stringify(G.b?{...o,branch:G.b}:o);
 const enc=s=>{let b='';new TextEncoder().encode(s).forEach(c=>b+=String.fromCharCode(c));return btoa(b)};
 const dec=b=>new TextDecoder().decode(Uint8Array.from(atob(b.replace(/\s/g,'')),c=>c.charCodeAt(0)));
 $('sz').innerHTML=['S','M','L','XL','XXL','Free'].map(s=>`<label class="chip"><input type="checkbox" value="${s}"><span>${s}</span></label>`).join('');
 $('f').onchange=()=>{$('pv').innerHTML=[...$('f').files].map(f=>`<img src="${URL.createObjectURL(f)}" alt="">`).join('')};
-async function get(){const r=await api('products.json?ref='+G.b);
- if(r.status===404)return{data:[]};
- if(!r.ok)throw new Error(r.status===401?'توکن خەلەتە یان بوویە کۆن':r.status===403?'توکن مافێ نڤیسینێ نینە':'GitHub '+r.status);
- const j=await r.json();return{data:JSON.parse(dec(j.content)),sha:j.sha}}
+async function get(){const r=await api('products.json'+(G.b?'?ref='+encodeURIComponent(G.b):''));
+ if(r.ok){const j=await r.json();return{data:JSON.parse(dec(j.content)),sha:j.sha}}
+ let m='';try{m=(await r.json()).message||''}catch(e){}
+ if(r.status===401)throw new Error('توکن خەلەتە یان بوویە کۆن');
+ if(r.status===404){
+  const rr=await fetch(`https://api.github.com/repos/${G.o}/${G.r}`,{headers:{Authorization:'Bearer '+TK,Accept:'application/vnd.github+json'}});
+  if(!rr.ok)throw new Error('repository نەهاتە دیتن. GH_OWNER و GH_REPO ل config.js ڕاست بکە، و ببینە توکن مافێ ڤی repositoryی هەیە');
+  if(/ref|branch|commit/i.test(m))throw new Error('branch نەهاتە دیتن. GH_BRANCH ل config.js بگۆڕە (main یان master) یان ڤالا بهێلە');
+  return{data:[]}}
+ throw new Error('GitHub '+r.status+(m?': '+m:''))}
 async function mutate(fn,msg){const {data,sha}=await get(),nd=fn(data);
- const r=await api('products.json',{method:'PUT',body:JSON.stringify({message:msg,content:enc(JSON.stringify(nd,null,1)),sha,branch:G.b})});
+ const r=await api('products.json',{method:'PUT',body:bd({message:msg,content:enc(JSON.stringify(nd,null,1)),sha})});
  if(!r.ok)throw new Error((await r.json()).message||r.status);return nd}
 function shrink(file){return new Promise(r=>{const i=new Image();i.onload=()=>{const k=Math.min(1,900/i.width),c=document.createElement('canvas');c.width=Math.round(i.width*k);c.height=Math.round(i.height*k);c.getContext('2d').drawImage(i,0,0,c.width,c.height);c.toBlob(r,'image/jpeg',.82)};i.src=URL.createObjectURL(file)})}
 async function upImg(f){const b=await shrink(f),data=await new Promise(r=>{const x=new FileReader();x.onload=()=>r(x.result.split(',')[1]);x.readAsDataURL(b)}),path='images/'+Date.now()+Math.random().toString(36).slice(2,6)+'.jpg';
- const r=await api(path,{method:'PUT',body:JSON.stringify({message:'add image',content:data,branch:G.b})});
+ const r=await api(path,{method:'PUT',body:bd({message:'add image',content:data})});
  if(!r.ok)throw new Error((await r.json()).message||r.status);return path}
 async function show(){if(!TK){$('login').hidden=false;$('app').hidden=true;return}
- try{L=(await get()).data;$('login').hidden=true;$('app').hidden=false;draw()}catch(e){$('lm').textContent=e.message;$('login').hidden=false;$('app').hidden=true}}
-function signIn(){TK=$('tk').value.trim();try{if($('rm').checked)localStorage.setItem('tk',TK)}catch(e){}show()}
+ try{L=(await get()).data;$('lm').textContent='';$('login').hidden=true;$('app').hidden=false;draw()}catch(e){$('lm').textContent=e.message;$('login').hidden=false;$('app').hidden=true}}
+function signIn(){TK=$('tk').value.trim();if(!TK){$('lm').textContent='توکنێ بنڤیسە';return}$('lm').textContent='دهێتە پشکنین...';try{if($('rm').checked)localStorage.setItem('tk',TK)}catch(e){}show()}
 function signOut(){TK='';try{localStorage.removeItem('tk')}catch(e){}$('tk').value='';show()}
 async function add(){const n=$('n').value.trim();if(!n)return alert('ناڤی بنڤیسە');
  $('ab').disabled=true;

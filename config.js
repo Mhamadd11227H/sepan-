@@ -4,7 +4,7 @@ const CFG = {
   WHATSAPP: "9647502326795",
   GH_OWNER: "",   // ناڤێ هەژمارا GitHub
   GH_REPO: "",    // ناڤێ repository
-  GH_BRANCH: "main"
+  GH_BRANCH: ""   // ڤالا بهێلە = branchا سەرەکی (main یان master)
 };
 
 // 🚚 نرخێ گەهاندنێ ب پێی شوێنی (دینار). بۆ گۆڕینا نرخان تنێ ڤان ژمارا بگۆڕە.
