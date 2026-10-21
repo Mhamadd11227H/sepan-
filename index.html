@@ -196,12 +196,13 @@ function upd(){
  const o=$('mo');
  if(cur.soldout){o.textContent='تەمام بوو';o.removeAttribute('href');o.style.opacity=.5}
  else{o.textContent='فەرمانێ ب واتسئاپ بدە';o.style.opacity=1;
-  o.href=wa(`سلاڤ 👋 حەز دکەم ڤی بەرهەمی فەرمان بکەم:\n${cur.name}${sz?'\nسایز: '+sz:''}\nنرخ: ${price(cur)}${cur.price&&zone?`\n📍 شوێن: ${Z[zone].ku}\n🚚 گەهاندن: ${fmt(fee())}\n💰 کوژمێ گشتی: ${fmt(cur.price+fee())}`:''}`)}
+  o.href=wa(`سلاڤ 👋 حەز دکەم ڤی بەرهەمی فەرمان بکەم:\n${cur.name}${sz?'\nسایز: '+sz:''}\nنرخ: ${price(cur)}${cur.images?.[0]?'\n🖼 '+abs(cur.images[0]):''}${cur.price&&zone?`\n📍 شوێن: ${Z[zone].ku}\n🚚 گەهاندن: ${fmt(fee())}\n💰 کوژمێ گشتی: ${fmt(cur.price+fee())}`:''}`)}
  $('ma').hidden=!!cur.soldout||!cur.price;
  const d=$('md');d.textContent=cur.price&&ZK.length?(zone?`گەهاندن: ${fmt(fee())} · کوژمێ گشتی: ${fmt(cur.price+fee())}`:'شوێنێ خۆ هەلبژێرە بۆ دیارکرنا گەهاندنێ'):'';d.hidden=!d.textContent}
 
 /* ===== گەهاندن + سەبەت ===== */
 const Z=typeof ZONES!=='undefined'?ZONES:{},ZK=Object.keys(Z),fmt=n=>n.toLocaleString('en')+' دینار';
+const abs=u=>{try{return new URL(u,location.href).href}catch(e){return u}};
 const sg=k=>{try{return localStorage.getItem(k)}catch(e){return null}},ss=(k,v)=>{try{localStorage.setItem(k,v)}catch(e){}};
 let cart={},zone=sg('sepan_zone')||'';try{cart=JSON.parse(sg('sepan_cart')||'{}')||{}}catch(e){cart={}}
 if(!Z[zone])zone='';
@@ -227,7 +228,7 @@ function renderCart(){const ks=Object.keys(cart).filter(k=>lineOf(k)&&cart[k]>0)
  $('ci').innerHTML=ks.map(k=>{const L=lineOf(k),p=L.p;return `<div class="ct1"><div class="cth">${p.images?.[0]?`<img src="${esc(p.images[0])}" alt="">`:'👗'}</div><div class="cin"><b>${esc(p.name)}${L.sz?' · '+esc(L.sz):''}</b><span>${fmt(L.price*cart[k])}</span></div><div class="qt"><button data-k="${esc(k)}" data-d="-1" aria-label="−">−</button><span>${cart[k]}</span><button data-k="${esc(k)}" data-d="1" aria-label="+">+</button></div></div>`}).join('');
  const sub=ks.reduce((s,k)=>s+lineOf(k).price*cart[k],0),tot=sub+fee();
  $('sumS').textContent=fmt(sub);$('sumD').textContent=zone?fmt(fee()):'—';$('sumT').textContent=fmt(tot);$('cf').hidden=false;
- const ln=ks.map(k=>{const L=lineOf(k);return `✦ ${L.p.name}${L.sz?' (سایز: '+L.sz+')':''} × ${cart[k]} — ${fmt(L.price*cart[k])}`}).join('\n');
+ const ln=ks.map(k=>{const L=lineOf(k);return `✦ ${L.p.name}${L.sz?' (سایز: '+L.sz+')':''} × ${cart[k]} — ${fmt(L.price*cart[k])}${L.p.images?.[0]?'\n🖼 '+abs(L.p.images[0]):''}`}).join('\n');
  $('co').href=wa(`سلاڤ 👋 حەز دکەم ڤان بەرهەمان فەرمان بکەم:\n${ln}\n\n🧾 کوژمێ بەرهەمان: ${fmt(sub)}\n📍 شوێن: ${zone?Z[zone].ku:'—'}\n🚚 گەهاندن: ${fmt(fee())}\n💰 کوژمێ گشتی: ${fmt(tot)}`)}
 function openCart(){$('cm').hidden=false;document.body.style.overflow='hidden'}
 function closeCart(){$('cm').hidden=true;document.body.style.overflow=''}
