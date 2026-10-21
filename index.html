@@ -159,10 +159,10 @@ footer{text-align:center;color:var(--mute);font-size:12px;padding:20px 16px calc
 <button class="tbtn" id="themeBtn" onclick="toggleTheme()" aria-label="Theme">🌛</button>
 <div class="modal" id="m" hidden onclick="if(event.target===this)closeM()"><div class="sheet"><button class="x" onclick="closeM()">✕</button>
 <div class="ph" id="mi"></div><div class="th" id="mt"></div>
-<div class="sb"><h3 id="mn"></h3><div class="pr" id="mp"></div><div id="msw" hidden><p style="margin-top:14px;font-weight:700">سایز هەلبژێرە:</p><div class="sz" id="ms"></div></div><label class="zb"><span>تو ل کوێ دژیت؟</span><select class="zs" id="mz"></select></label><p class="dv" id="md" hidden></p>
+<div class="sb"><h3 id="mn"></h3><div class="pr" id="mp"></div><div id="msw" hidden><p style="margin-top:14px;font-weight:700">سایز هەلبژێرە:</p><div class="sz" id="ms"></div></div><label class="zb"><span>تو ل کوێ دژیت؟</span><select class="zs" id="mz"></select></label><input class="zx" id="mx" hidden placeholder="شوێنێ خۆ بنڤیسە (باژێر / گوند / گەڕەک)"><p class="dv" id="md" hidden></p>
 <div class="acts"><button class="btn" id="ma" onclick="addCur()">بۆ سەبەتێ زێدە بکە</button><a class="btn g" id="mo" target="_blank" rel="noopener">فەرمانێ ب واتسئاپ بدە</a></div></div></div></div>
 <div class="modal" id="cm" hidden onclick="if(event.target===this)closeCart()"><div class="sheet cs"><button class="x" onclick="closeCart()">✕</button><div class="sb"><h3>سەبەتا من</h3><div class="cl" id="ci"></div>
-<div class="cf" id="cf" hidden><label class="zb"><span>تو ل کوێ دژیت؟</span><select class="zs" id="cz"></select></label>
+<div class="cf" id="cf" hidden><label class="zb"><span>تو ل کوێ دژیت؟</span><select class="zs" id="cz"></select></label><input class="zx" id="cx" hidden placeholder="شوێنێ خۆ بنڤیسە (باژێر / گوند / گەڕەک)">
 <div class="sum"><div><span>کوژمێ بەرهەمان</span><b id="sumS"></b></div><div><span>گەهاندن</span><b id="sumD"></b></div><div class="tot"><span>کوژمێ گشتی</span><b id="sumT"></b></div></div>
 <div class="acts"><a class="btn" id="co" target="_blank" rel="noopener">فەرمانێ ب واتسئاپ بنێرە</a><button class="btn g" onclick="clearCart()">سەبەتێ ڤالا بکە</button></div></div></div></div></div>
 <script src="config.js"></script>
@@ -196,25 +196,29 @@ function upd(){
  const o=$('mo');
  if(cur.soldout){o.textContent='تەمام بوو';o.removeAttribute('href');o.style.opacity=.5}
  else{o.textContent='فەرمانێ ب واتسئاپ بدە';o.style.opacity=1;
-  o.href=wa(`سلاڤ 👋 حەز دکەم ڤی بەرهەمی فەرمان بکەم:\n${cur.name}${sz?'\nسایز: '+sz:''}\nنرخ: ${price(cur)}${cur.images?.[0]?'\n🖼 '+abs(cur.images[0]):''}${cur.price&&zone?`\n📍 شوێن: ${Z[zone].ku}\n🚚 گەهاندن: ${fmt(fee())}\n💰 کوژمێ گشتی: ${fmt(cur.price+fee())}`:''}`)}
+  o.href=wa(`سلاڤ 👋 حەز دکەم ڤی بەرهەمی فەرمان بکەم:\n${cur.name}${sz?'\nسایز: '+sz:''}\nنرخ: ${price(cur)}${cur.images?.[0]?'\n🖼 '+abs(cur.images[0]):''}${cur.price&&zone?`\n📍 شوێن: ${zname()}\n🚚 گەهاندن: ${dtxt()}\n💰 کوژمێ گشتی: ${ttxt(cur.price)}`:''}`)}
  $('ma').hidden=!!cur.soldout||!cur.price;
- const d=$('md');d.textContent=cur.price&&ZK.length?(zone?`گەهاندن: ${fmt(fee())} · کوژمێ گشتی: ${fmt(cur.price+fee())}`:'شوێنێ خۆ هەلبژێرە بۆ دیارکرنا گەهاندنێ'):'';d.hidden=!d.textContent}
+ const d=$('md');d.textContent=cur.price&&ZK.length?(zone?(pend()?'گەهاندن: نرخ ل چاتێ دهێتە دیارکرن':`گەهاندن: ${fmt(fee())} · کوژمێ گشتی: ${fmt(cur.price+fee())}`):'شوێنێ خۆ هەلبژێرە بۆ دیارکرنا گەهاندنێ'):'';d.hidden=!d.textContent}
 
 /* ===== گەهاندن + سەبەت ===== */
 const Z=typeof ZONES!=='undefined'?ZONES:{},ZK=Object.keys(Z),fmt=n=>n.toLocaleString('en')+' دینار';
 const abs=u=>{try{return new URL(u,location.href).href}catch(e){return u}};
 const sg=k=>{try{return localStorage.getItem(k)}catch(e){return null}},ss=(k,v)=>{try{localStorage.setItem(k,v)}catch(e){}};
 let cart={},zone=sg('sepan_zone')||'';try{cart=JSON.parse(sg('sepan_cart')||'{}')||{}}catch(e){cart={}}
-if(!Z[zone])zone='';
-const fee=()=>zone?Z[zone].fee:0;
+const OT='__other';let loc=sg('sepan_loc')||'';
+if(!Z[zone]&&zone!==OT)zone='';
+const pend=()=>zone===OT,fee=()=>zone&&!pend()?Z[zone].fee:0,zname=()=>pend()?(loc.trim()||'—'):zone?Z[zone].ku:'—',
+ dtxt=()=>pend()?'ل چاتێ دهێتە دیارکرن':fmt(fee()),ttxt=s=>pend()?fmt(s)+' + گەهاندن':fmt(s+fee());
 function lineOf(k){const [id,z]=k.split('|'),p=P.find(x=>x.id==id);return p&&p.price&&!p.soldout?{p,sz:z,price:p.price}:null}
-function renderZones(){const h='<option value="">شوێنێ خۆ هەلبژێرە...</option>'+ZK.map(k=>`<option value="${k}">${esc(Z[k].ku)} — ${fmt(Z[k].fee)}</option>`).join('');
- ['mz','cz'].forEach(id=>{$(id).innerHTML=h;$(id).value=zone});document.querySelectorAll('.zb').forEach(x=>x.hidden=!ZK.length)}
-function setZone(v){zone=Z[v]?v:'';ss('sepan_zone',zone);renderZones();if(cur&&!$('m').hidden)upd();renderCart()}
+function renderZones(){const h='<option value="">شوێنێ خۆ هەلبژێرە...</option>'+ZK.map(k=>`<option value="${k}">${esc(Z[k].ku)} — ${fmt(Z[k].fee)}</option>`).join('')+(ZK.length?'<option value="'+OT+'">شوێنەکێ دی — نرخ ل چاتێ</option>':'');
+ ['mz','cz'].forEach(id=>{$(id).innerHTML=h;$(id).value=zone});
+ ['mx','cx'].forEach(id=>{$(id).hidden=!ZK.length||!pend();$(id).value=loc});document.querySelectorAll('.zb').forEach(x=>x.hidden=!ZK.length)}
+function setZone(v){zone=Z[v]||v===OT?v:'';ss('sepan_zone',zone);renderZones();if(cur&&!$('m').hidden)upd();renderCart()}
 function shake(id){const s=$(id);s.classList.remove('shake');void s.offsetWidth;s.classList.add('shake');s.focus()}
 $('mz').onchange=e=>setZone(e.target.value);$('cz').onchange=e=>setZone(e.target.value);
-$('mo').addEventListener('click',e=>{if(cur&&cur.price&&!cur.soldout&&ZK.length&&!zone){e.preventDefault();shake('mz')}});
-$('co').addEventListener('click',e=>{if(ZK.length&&!zone){e.preventDefault();shake('cz')}});
+$('mo').addEventListener('click',e=>{if(cur&&cur.price&&!cur.soldout&&ZK.length){if(!zone){e.preventDefault();shake('mz')}else if(pend()&&!loc.trim()){e.preventDefault();shake('mx')}}});
+$('co').addEventListener('click',e=>{if(ZK.length){if(!zone){e.preventDefault();shake('cz')}else if(pend()&&!loc.trim()){e.preventDefault();shake('cx')}}});
+['mx','cx'].forEach(id=>$(id).addEventListener('input',e=>{loc=e.target.value;ss('sepan_loc',loc);['mx','cx'].forEach(j=>{if($(j)!==e.target)$(j).value=loc});if(cur&&!$('m').hidden)upd();renderCart()}));
 const saveCart=()=>ss('sepan_cart',JSON.stringify(cart));
 function addCur(){if(!cur||cur.soldout||!cur.price)return;const k=cur.sizes?.length?cur.id+'|'+sz:String(cur.id);
  cart[k]=(cart[k]||0)+1;saveCart();renderCart();const b=$('ma');b.textContent='زێدە بوو ✓';clearTimeout(b._t);b._t=setTimeout(()=>b.textContent='بۆ سەبەتێ زێدە بکە',1300);
@@ -226,10 +230,10 @@ function renderCart(){const ks=Object.keys(cart).filter(k=>lineOf(k)&&cart[k]>0)
  $('cc').textContent=n;$('cc').hidden=!n;
  if(!ks.length){$('ci').innerHTML='<p class="none">سەبەتا تە ڤالایە. چەند بەرهەمان زێدە بکە.</p>';$('cf').hidden=true;return}
  $('ci').innerHTML=ks.map(k=>{const L=lineOf(k),p=L.p;return `<div class="ct1"><div class="cth">${p.images?.[0]?`<img src="${esc(p.images[0])}" alt="">`:'👗'}</div><div class="cin"><b>${esc(p.name)}${L.sz?' · '+esc(L.sz):''}</b><span>${fmt(L.price*cart[k])}</span></div><div class="qt"><button data-k="${esc(k)}" data-d="-1" aria-label="−">−</button><span>${cart[k]}</span><button data-k="${esc(k)}" data-d="1" aria-label="+">+</button></div></div>`}).join('');
- const sub=ks.reduce((s,k)=>s+lineOf(k).price*cart[k],0),tot=sub+fee();
- $('sumS').textContent=fmt(sub);$('sumD').textContent=zone?fmt(fee()):'—';$('sumT').textContent=fmt(tot);$('cf').hidden=false;
+ const sub=ks.reduce((s,k)=>s+lineOf(k).price*cart[k],0),tot=0;
+ $('sumS').textContent=fmt(sub);$('sumD').textContent=zone?dtxt():'—';$('sumT').textContent=ttxt(sub);$('cf').hidden=false;
  const ln=ks.map(k=>{const L=lineOf(k);return `✦ ${L.p.name}${L.sz?' (سایز: '+L.sz+')':''} × ${cart[k]} — ${fmt(L.price*cart[k])}${L.p.images?.[0]?'\n🖼 '+abs(L.p.images[0]):''}`}).join('\n');
- $('co').href=wa(`سلاڤ 👋 حەز دکەم ڤان بەرهەمان فەرمان بکەم:\n${ln}\n\n🧾 کوژمێ بەرهەمان: ${fmt(sub)}\n📍 شوێن: ${zone?Z[zone].ku:'—'}\n🚚 گەهاندن: ${fmt(fee())}\n💰 کوژمێ گشتی: ${fmt(tot)}`)}
+ $('co').href=wa(`سلاڤ 👋 حەز دکەم ڤان بەرهەمان فەرمان بکەم:\n${ln}\n\n🧾 کوژمێ بەرهەمان: ${fmt(sub)}\n📍 شوێن: ${zname()}\n🚚 گەهاندن: ${dtxt()}\n💰 کوژمێ گشتی: ${ttxt(sub)}`)}
 function openCart(){$('cm').hidden=false;document.body.style.overflow='hidden'}
 function closeCart(){$('cm').hidden=true;document.body.style.overflow=''}
 renderZones();
