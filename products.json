@@ -1,5 +1,19 @@
 [
  {
+  "id": 1792540983040,
+  "name": "Jsns",
+  "price": 5500,
+  "category": "عەبا",
+  "sizes": [
+   "XXL"
+  ],
+  "images": [
+   "images/1792540980800anfx.jpg"
+  ],
+  "is_new": false,
+  "soldout": false
+ },
+ {
   "id": 1792539554249,
   "name": "نزاا",
   "price": 25000,
