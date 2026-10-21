@@ -4,10 +4,10 @@
 <title>SEPAN STYLE | سیپان</title>
 <meta name="description" content="SEPAN STYLE – فرۆشگەهەکا ئۆنلاینا ژنانە، جلێن شیک و مودێرن">
 <meta property="og:title" content="SEPAN STYLE | سیپان"><meta property="og:image" content="logo.png">
-<meta name="theme-color" content="#0F0A0B">
+<meta name="theme-color" content="#FFF6F3">
 <link rel="icon" href="favicon.png">
 <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Noto+Kufi+Arabic:wght@600;800&family=Vazirmatn:wght@400;500;700&family=Cormorant+Garamond:wght@600;700&display=swap" rel="stylesheet">
-<script>document.documentElement.classList.add("js")</script><style>
+<script>document.documentElement.classList.add("js");try{if(localStorage.getItem("theme")==="dark")document.documentElement.classList.add("dark")}catch(e){}</script><style>
 :root{--bg:#0F0A0B;--ink:#FAF1EC;--mute:#B4A29E;--r1:#F9DFD3;--r2:#D9A08C;--r3:#B76E79;--g:linear-gradient(135deg,#F9DFD3,#D9A08C 50%,#B76E79);--glass:rgba(255,255,255,.05);--edge:rgba(255,255,255,.1)}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html{scroll-behavior:smooth;scroll-padding-top:90px}
@@ -130,7 +130,7 @@ footer{text-align:center;color:var(--mute);font-size:12px;padding:20px 16px calc
 .dev .lt{display:inline-flex;align-items:center;gap:8px;font-size:13px;color:var(--r1);border-bottom:1px solid var(--r3);padding-bottom:2px;direction:ltr;transition:gap .3s}.dev .lt:hover{gap:14px}.dev .lt svg{width:14px;height:14px}
 .dev .tk{display:block;margin-top:10px;color:var(--mute);font-size:12px;direction:ltr}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}.js .rv{opacity:1;transform:none}}
-</style></head><body>
+</style><link rel="stylesheet" href="theme.css?v=1"></head><body>
 <i class="orb o1"></i><i class="orb o2"></i>
 <header class="gl" id="hd"><a class="brand" href="#"><img src="logo.png" alt=""><span>SEPAN STYLE</span></a><a class="btn sm" href="#follow">سۆشیال میدیا</a></header>
 <div class="hero"><div class="logo"><img src="logo.png" alt="SEPAN STYLE"><i class="sp">✦</i><i class="sp">✦</i><i class="sp">✦</i></div><div class="en txt">SEPAN</div><h1>سیپان · STYLE</h1><span class="fl">FEEL THE LUXURY</span><p>جلێن ژنان ب ستایلەکێ ڕەسەن و مۆدێرن ✨</p><div class="row"><a class="btn" href="#shop">بەرهەمان ببینە</a><a class="btn g" id="hwa" target="_blank" rel="noopener">واتسئاپ</a></div></div>
@@ -154,6 +154,7 @@ footer{text-align:center;color:var(--mute);font-size:12px;padding:20px 16px calc
 <a class="tk" href="https://www.tiktok.com/@18.h4mk0" target="_blank" rel="noopener">TikTok · @18.h4mk0</a></div></section>
 <footer>© 2026 SEPAN STYLE</footer>
 <a class="fab" id="fab" target="_blank" rel="noopener" aria-label="WhatsApp"><svg viewBox="0 0 24 24" fill="#fff"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm4.800 13.600c-.2.600-1.200 1.100-1.700 1.200-.5.100-1 .2-3.100-.6-2.600-1.100-4.300-3.700-4.400-3.900-.1-.2-1-1.400-1-2.600s.6-1.900.9-2.100c.2-.3.500-.3.700-.3h.5c.2 0 .4 0 .6.500l.8 2c.1.2.1.400 0 .5l-.4.600c-.2.200-.3.400-.1.600.2.300.8 1.200 1.600 2 1.100.9 2 1.200 2.300 1.400.3.100.4.100.6-.1l.8-1c.2-.3.400-.2.600-.1l1.900.9c.3.100.5.200.5.400.1.100.1.600-.1 1.200z"/></svg></a>
+<button class="tbtn" id="themeBtn" onclick="toggleTheme()" aria-label="Theme">🌛</button>
 <div class="modal" id="m" hidden onclick="if(event.target===this)closeM()"><div class="sheet"><button class="x" onclick="closeM()">✕</button>
 <div class="ph" id="mi"></div><div class="th" id="mt"></div>
 <div class="sb"><h3 id="mn"></h3><div class="pr" id="mp"></div><div id="msw" hidden><p style="margin-top:14px;font-weight:700">سایز هەلبژێرە:</p><div class="sz" id="ms"></div></div><a class="btn" id="mo" style="display:block;margin-top:16px" target="_blank" rel="noopener">فەرمانێ ب واتسئاپ بدە</a></div></div></div>
@@ -194,4 +195,7 @@ document.addEventListener('keydown',e=>e.key==='Escape'&&closeM());
 addEventListener('scroll',()=>$('hd').classList.toggle('sc2',scrollY>20),{passive:true});
 document.querySelectorAll('.sc').forEach(c=>c.addEventListener('pointermove',e=>{const r=c.getBoundingClientRect();c.style.setProperty('--x',e.clientX-r.left+'px');c.style.setProperty('--y',e.clientY-r.top+'px')}));
 watch();setTimeout(()=>document.querySelectorAll(".rv").forEach(e=>e.classList.add("in")),2500);load();
+function tc(){const d=document.documentElement.classList.contains('dark');$('themeBtn').textContent=d?'🌞':'🌛';document.querySelector('meta[name=theme-color]').content=d?'#0F0A0B':'#FFF6F3'}
+function toggleTheme(){const h=document.documentElement;h.classList.toggle('dark');try{localStorage.setItem('theme',h.classList.contains('dark')?'dark':'light')}catch(e){}tc()}
+tc();
 </script></body></html>
