@@ -12,21 +12,5 @@
   ],
   "is_new": false,
   "soldout": false
- },
- {
-  "id": 1792539554249,
-  "name": "نزاا",
-  "price": 25000,
-  "category": "سێت",
-  "sizes": [
-   "M",
-   "L",
-   "XL"
-  ],
-  "images": [
-   "images/17925395519640c8d.jpg"
-  ],
-  "is_new": true,
-  "soldout": false
  }
 ]
