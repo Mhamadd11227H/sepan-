@@ -6,7 +6,7 @@ const C=typeof CFG!=='undefined'?CFG:{WHATSAPP:'9647502326795'},$=id=>document.g
 esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 $('hwa').href=wa();$('cwa').href=wa();$('fab').href=wa();
 let P=[],cat='هەمی',cur=null,sz='',img=0,cats=[];
-const price=p=>p.price?p.price.toLocaleString('en')+' دینار':'بۆ نرخی پسیار بکە';
+const price=p=>p.price?p.price.toLocaleString('en')+' دینار':'بۆ بهای پسیار بکە';
 const io='IntersectionObserver' in window?new IntersectionObserver(e=>e.forEach(x=>{if(x.isIntersecting){x.target.classList.add('in');io.unobserve(x.target)}}),{threshold:.12}):null;
 const watch=()=>document.querySelectorAll('.rv:not(.in)').forEach(el=>io?io.observe(el):el.classList.add('in'));
 
@@ -42,10 +42,10 @@ function upd(){
  document.querySelectorAll('#ms button').forEach(b=>b.classList.toggle('on',b.textContent===sz));
  const o=$('mo');
  if(cur.soldout){o.textContent='تەمام بوو';o.removeAttribute('href');o.style.opacity=.5}
- else{o.textContent='فەرمانێ ب واتسئاپ بدە';o.style.opacity=1;
-  o.href=wa(`سلاڤ 👋 حەز دکەم ڤی بەرهەمی فەرمان بکەم:\n${cur.name}${sz?'\nسایز: '+sz:''}\nنرخ: ${price(cur)}${cur.images?.[0]?'\n🖼 '+abs(cur.images[0]):''}${cur.price&&zone?`\n📍 شوێن: ${zname()}\n🚚 گەهاندن: ${dtxt()}\n💰 کوژمێ گشتی: ${ttxt(cur.price)}`:''}`)}
+ else{o.textContent='داخازیێ ل واتسئاپ بکە';o.style.opacity=1;
+  o.href=wa(`سلاڤ 👋 حەز دکەم ڤی بەرهەمی داخاز بکەم:\n${cur.name}${sz?'\nسایز: '+sz:''}\nنرخ: ${price(cur)}${cur.images?.[0]?'\n🖼 '+abs(cur.images[0]):''}${cur.price&&zone?`\n📍 جهێ بکری : ${zname()}\n🚚 گەهاندن: ${dtxt()}\n💰 کوژمێ گشتی: ${ttxt(cur.price)}`:''}`)}
  $('ma').hidden=!!cur.soldout||!cur.price;
- const d=$('md');d.textContent=cur.price&&ZK.length?(zone?(pend()?'گەهاندن: نرخ ل چاتێ دهێتە دیارکرن':`گەهاندن: ${fmt(fee())} · کوژمێ گشتی: ${fmt(cur.price+fee())}`):'شوێنێ خۆ هەلبژێرە بۆ دیارکرنا گەهاندنێ'):'';d.hidden=!d.textContent}
+ const d=$('md');d.textContent=cur.price&&ZK.length?(zone?(pend()?'گەهاندن: نرخ ل چاتێ دهێتە دیارکرن':`گەهاندن: ${fmt(fee())} · کوژمێ گشتی: ${fmt(cur.price+fee())}`):'جهێ خو هەلبژێرە بۆ دیارکرنا گەهاندنێ'):'';d.hidden=!d.textContent}
 
 
 
@@ -59,9 +59,9 @@ let cart={},zone=sg('sepan_zone')||'';try{cart=JSON.parse(sg('sepan_cart')||'{}'
 const OT='__other';let loc=sg('sepan_loc')||'';
 if(!Z[zone]&&zone!==OT)zone='';
 const pend=()=>zone===OT,fee=()=>zone&&!pend()?Z[zone].fee:0,zname=()=>pend()?(loc.trim()||'—'):zone?Z[zone].ku:'—',
- dtxt=()=>pend()?'ل چاتێ دهێتە دیارکرن':fmt(fee()),ttxt=s=>pend()?fmt(s)+' + گەهاندن':fmt(s+fee());
+ dtxt=()=>pend()?'ل چاتی دهێتە دیارکرن':fmt(fee()),ttxt=s=>pend()?fmt(s)+' + گەهاندن':fmt(s+fee());
 function lineOf(k){const [id,z]=k.split('|'),p=P.find(x=>x.id==id);return p&&p.price&&!p.soldout?{p,sz:z,price:p.price}:null}
-function renderZones(){const h='<option value="">شوێنێ خۆ هەلبژێرە...</option>'+ZK.map(k=>`<option value="${k}">${esc(Z[k].ku)} — ${fmt(Z[k].fee)}</option>`).join('')+(ZK.length?'<option value="'+OT+'">شوێنەکێ دی — نرخ ل چاتێ</option>':'');
+function renderZones(){const h='<option value="">جهێ خو هەلبژێرە...</option>'+ZK.map(k=>`<option value="${k}">${esc(Z[k].ku)} — ${fmt(Z[k].fee)}</option>`).join('')+(ZK.length?'<option value="'+OT+'">شوێنەکێ دی — نرخ ل چاتێ</option>':'');
  ['mz','cz'].forEach(id=>{$(id).innerHTML=h;$(id).value=zone});
  ['mx','cx'].forEach(id=>{$(id).hidden=!ZK.length||!pend();$(id).value=loc});document.querySelectorAll('.zb').forEach(x=>x.hidden=!ZK.length)}
 function setZone(v){zone=Z[v]||v===OT?v:'';ss('sepan_zone',zone);renderZones();if(cur&&!$('m').hidden)upd();renderCart()}
@@ -88,7 +88,7 @@ function renderCart(){const ks=Object.keys(cart).filter(k=>lineOf(k)&&cart[k]>0)
  const sub=ks.reduce((s,k)=>s+lineOf(k).price*cart[k],0),tot=0;
  $('sumS').textContent=fmt(sub);$('sumD').textContent=zone?dtxt():'—';$('sumT').textContent=ttxt(sub);$('cf').hidden=false;
  const ln=ks.map(k=>{const L=lineOf(k);return `✦ ${L.p.name}${L.sz?' (سایز: '+L.sz+')':''} × ${cart[k]} — ${fmt(L.price*cart[k])}${L.p.images?.[0]?'\n🖼 '+abs(L.p.images[0]):''}`}).join('\n');
- $('co').href=wa(`سلاڤ 👋 حەز دکەم ڤان بەرهەمان فەرمان بکەم:\n${ln}\n\n🧾 کوژمێ بەرهەمان: ${fmt(sub)}\n📍 شوێن: ${zname()}\n🚚 گەهاندن: ${dtxt()}\n💰 کوژمێ گشتی: ${ttxt(sub)}`)}
+ $('co').href=wa(`سلاڤ 👋 حەز دکەم ڤان بەرهەمان داخاز بکەم:\n${ln}\n\n🧾 کوژمێ بەرهەمان: ${fmt(sub)}\n 📍 جهێ بکری : ${zname()}\n🚚 گەهاندن: ${dtxt()}\n💰 کوژمێ گشتی: ${ttxt(sub)}`)}
 
 // ==================================================
 // 7. ڤەکرن و داخستنا مۆدالان
